@@ -1,4 +1,4 @@
 from icecube.icetray import load
-load('StartingTrackVeto', False)
+load('TrackHits', False)
 del load
 
