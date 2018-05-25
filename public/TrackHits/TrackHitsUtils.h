@@ -21,15 +21,19 @@
 #include <photonics-service/I3PhotonicsService.h>
 #include <math.h>
 
-namespace TrackHitsUtils {
-    /* This is a namespace for functions and variables needed to calculate a Track Veto
-     *
-     */
-    void ObtainEventInfo( I3FramePtr frame, I3VectorI3ParticleConstPtr segments,
-            I3PhotonicsServicePtr photonService,
-            std::vector<double> & timeEdges, std::string pulsesName,
-            std::string fitName, double mincadDist,double percent,
-            I3GeometryConstPtr geo, I3VectorOMKeyPtr badDOMs );
+namespace TrackHitsUtils 
+{
+    /* This is a namespace for functions and variables needed to find TrackHits */
+    void ObtainEventInfo(I3FramePtr frame, 
+			 I3VectorI3ParticleConstPtr segments,
+			 I3PhotonicsServicePtr photonService,
+			 std::vector<double> & timeEdges, 
+			 std::string pulsesName,
+			 std::string fitName, 
+			 double mincadDist,
+			 double percent,
+			 I3GeometryConstPtr geo, 
+			 I3VectorOMKeyPtr badDOMs );
     
 };
 

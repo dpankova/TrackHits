@@ -52,12 +52,6 @@ private:
     double timeEdgeNSteps_;
     double minCADDist_;
     double percent_;
-    double stdDevSp_;
-    bool supressStoch_;
-    bool cascade_;
-    bool norm_;
-    double missProbThresh_;
-    std::string datType_;
     std::string geoName_;
     std::string badDOMsName_;
     I3GeometryConstPtr geo_;
