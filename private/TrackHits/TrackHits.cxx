@@ -161,5 +161,7 @@ void TrackHits::Physics(I3FramePtr frame)
 					percent_, 
 					geo_, 
 					boost::make_shared<I3VectorOMKey>(badDOMs_) );
+
+	PushFrame(frame);
     }
 }

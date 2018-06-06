@@ -1,5 +1,5 @@
 #
-# $Id: CMakeLists.txt 141949 2016-04-27 16:53 kjero $
+# $Id: CMakeLists.txt 141949 2016-04-27 16:53 kjero (2018-06-06 dpankova)$
 #
 
 i3_project(TrackHits
