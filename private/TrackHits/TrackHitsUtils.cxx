@@ -83,6 +83,27 @@ namespace TrackHitsUtils
 	{
 	    log_debug("-------------");
 	    const OMKey& omkey = k->first;
+	    //DC strings
+	    if (omkey.GetString()>78 && omkey.GetOM()>10) 
+	    { 
+	        continue; 
+	    }
+	    //DC icecube strings
+	    if (((omkey.GetString() == 35) || (omkey.GetString() == 36)
+		 || (omkey.GetString() == 37)) && (omkey.GetOM()>40)) 
+	    { 
+	        continue; 
+	    }
+	    if (((omkey.GetString() == 26) || (omkey.GetString() == 27))
+		&& (omkey.GetOM()>40)) 
+	    { 
+	        continue; 
+	    }
+	    if (((omkey.GetString() == 45) || (omkey.GetString() == 46))
+		&& (omkey.GetOM()>40)) 
+	    { 
+	        continue; 
+	    }
 	    //Skip if it's IceTop DOM
 	    if (omkey.GetString()<87 && omkey.GetOM()>60) 
 	    { 
