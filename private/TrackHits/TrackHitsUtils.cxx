@@ -28,8 +28,11 @@
 #include <boost/math/special_functions/sign.hpp>
 #include <boost/math/distributions/poisson.hpp>
 #include <boost/lexical_cast.hpp>
+#include <vector>
+#include <boost/assign/list_of.hpp>
 #include <boost/make_shared.hpp>
 #include <math.h>
+
 
 //const double INDEX_OF_REFRACTION = I3Constants::n_ice;
 const double CHER_ANGLE = I3Constants::theta_cherenkov;
@@ -69,10 +72,11 @@ namespace TrackHitsUtils
 	I3MapKeyUInt keyToIndexMap;
 	I3MapKeyDouble allObsQs;//All Observed Charges
 	I3MapKeyDouble cads;//Closest Approach Distances
-	I3VectorDouble coincObsQsList;//Coincident Observed Charges
-	I3VectorDouble coincObsPsList;//Coincident Observed Charges
-	I3VectorDouble unnormedExQsList;//Unnormalized Expected Charges
-	I3VectorDouble expectedBgsList;//Expected Background Charges
+	I3MapKeyVectorDouble coincObsQsList;//Coincident Observed Charges
+	I3MapKeyDouble coincObsPsList;//Coincident Observed Charges
+	I3MapKeyVectorDouble coincObsProbsList;//Coincident Observed Charges
+	I3MapKeyDouble unnormedExQsList;//Unnormalized Expected Charges
+	I3MapKeyDouble expectedBgsList;//Expected Background Charges
 	unsigned int index = 0;
 
 
@@ -298,7 +302,9 @@ namespace TrackHitsUtils
 
 
 	    //Find charge in that time window
-	    double coincObsQsTmp=0;
+	    //double coincObsQsTmp=0;
+	    std::vector<double> coincObsQsTmp;
+	    std::vector<double> coincObsProbsTmp;
 	    double coincObsPsTmp=0;
 	    log_debug("q size=%lu",qs.size());
 	    for (unsigned int  i = 0; i< qs.size(); i++)
@@ -306,8 +312,10 @@ namespace TrackHitsUtils
 	        log_debug("t=%f q=%f",ts[i],qs[i]);
 		if (ts[i] > minTime && ts[i] < maxTime)
 		{ 
-		    coincObsQsTmp+=qs[i]; 
+		  //coincObsQsTmp+=qs[i]; 
 		    coincObsPsTmp+=1; 
+		    coincObsQsTmp.push_back(qs[i]);
+		    coincObsProbsTmp.push_back(sumQuantilesPerTime[i]);
 		}
 	    }
 	    log_debug("coinc obs q= %f",coincObsQsTmp);
@@ -318,18 +326,21 @@ namespace TrackHitsUtils
 	    //indicating something bad, record 0 and keep moving
 	    if (std::isnan(quantileSum)) 
 	    { 
-	      expectedBgsList.push_back(0); 
-	      unnormedExQsList.push_back(0);
-	      coincObsQsList.push_back(0); 
-	      coincObsPsList.push_back(0);
+	      std::vector<double> v =  boost::assign::list_of(0);
+	      expectedBgsList[omkey] = 0; 
+	      unnormedExQsList[omkey] = 0;
+	      coincObsQsList[omkey] = v; 
+	      coincObsPsList[omkey] = 0;
+	      coincObsProbsList[omkey] = v;
 	    }
 	    else 
 	    { 
 	      //The calculation below inserts 100 Hz of noise into every time bin
-	      expectedBgsList.push_back((timeEdges[1] - timeEdges[0])*100*pow(10, -9));
-	      unnormedExQsList.push_back(quantileSum);
-	      coincObsQsList.push_back(coincObsQsTmp); 
-	      coincObsPsList.push_back(coincObsPsTmp);
+	      expectedBgsList[omkey] = (timeEdges[1] - timeEdges[0])*100*pow(10, -9);
+	      unnormedExQsList[omkey] = quantileSum;
+	      coincObsQsList[omkey] = coincObsQsTmp; 
+	      coincObsPsList[omkey] = coincObsPsTmp;
+	      coincObsProbsList[omkey] = coincObsProbsTmp;
 	    }
 	    index++;
 	}
@@ -339,10 +350,10 @@ namespace TrackHitsUtils
 	std::string namePrefix ("TrackHits_"+fitName+"_"+pulsesName);
 	std::string nameSufixes[6] = { "coincObsQsList", 
 				       "coincObsPsList", 
+				       "coincObsProbsList", 
 				       "expectedQsList", 
 				       "expectedBgsList",
-				       "closestApDists", 
-				       "keyToIndexMap" };
+				       "closestApDists"};
 	log_debug("Names set");
 	std::string sls = boost::lexical_cast<std::string>(segments->size());
 	std::vector<std::string> names;
@@ -359,13 +370,13 @@ namespace TrackHitsUtils
 
 	log_debug("Begin booking");
 	int nameIdx=0;
-	frame -> Put(names[nameIdx], boost::make_shared<I3VectorDouble>(coincObsQsList)); nameIdx++;
-	frame -> Put(names[nameIdx], boost::make_shared<I3VectorDouble>(coincObsPsList)); nameIdx++;
-	frame -> Put(names[nameIdx], boost::make_shared<I3VectorDouble>(unnormedExQsList)); nameIdx++;
-	frame -> Put(names[nameIdx], boost::make_shared<I3VectorDouble>(expectedBgsList)); nameIdx++;
+	frame -> Put(names[nameIdx], boost::make_shared<I3MapKeyVectorDouble>(coincObsQsList)); nameIdx++;
+	frame -> Put(names[nameIdx], boost::make_shared<I3MapKeyDouble>(coincObsPsList)); nameIdx++;
+	frame -> Put(names[nameIdx], boost::make_shared<I3MapKeyVectorDouble>(coincObsProbsList)); nameIdx++;
+	frame -> Put(names[nameIdx], boost::make_shared<I3MapKeyDouble>(unnormedExQsList)); nameIdx++;
+	frame -> Put(names[nameIdx], boost::make_shared<I3MapKeyDouble>(expectedBgsList)); nameIdx++;
 	frame -> Put(names[nameIdx], boost::make_shared<I3MapKeyDouble>(cads)); nameIdx++;
-	frame -> Put(names[nameIdx], boost::make_shared<I3MapKeyUInt>(keyToIndexMap)); nameIdx++;
-  
+	  
     }
 }
 
