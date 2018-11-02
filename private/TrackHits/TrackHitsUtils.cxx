@@ -70,7 +70,6 @@ namespace TrackHitsUtils
 
 	//Create Lists that will be saved
 	I3MapKeyUInt keyToIndexMap;
-	I3MapKeyDouble allObsQs;//All Observed Charges
 	I3MapKeyDouble cads;//Closest Approach Distances
 	I3MapKeyVectorDouble coincObsQsList;//Coincident Observed Charges
 	I3MapKeyVectorDouble coincObsProbsList;//Coincident Observed Charges
@@ -81,11 +80,11 @@ namespace TrackHitsUtils
 
 	//Loop over all DOMs, calculate track to DOM metrics, 
 	//extract per DOM observed and expected charge information
-	for (I3OMGeoMap::const_iterator k = geo->omgeo.begin();
-	     k != geo->omgeo.end(); k++)
+	for (I3RecoPulseSeriesMap::const_iterator k = (*pulses).begin();
+	     k != (*pulses).end(); k++)
 	{
 	    log_debug("-------------");
-	    const OMKey& omkey = k->first;
+	    const OMKey& omkey = (*k).first;
 	    //DC strings
 	    if (omkey.GetString()>78 && omkey.GetOM()>10) 
 	    { 
@@ -93,17 +92,17 @@ namespace TrackHitsUtils
 	    }
 	    //DC icecube strings
 	    if (((omkey.GetString() == 35) || (omkey.GetString() == 36)
-		 || (omkey.GetString() == 37)) && (omkey.GetOM()>40)) 
+		 || (omkey.GetString() == 37)) && (omkey.GetOM()>38)) 
 	    { 
 	        continue; 
 	    }
 	    if (((omkey.GetString() == 26) || (omkey.GetString() == 27))
-		&& (omkey.GetOM()>40)) 
+		&& (omkey.GetOM()>38)) 
 	    { 
 	        continue; 
 	    }
 	    if (((omkey.GetString() == 45) || (omkey.GetString() == 46))
-		&& (omkey.GetOM()>40)) 
+		&& (omkey.GetOM()>38)) 
 	    { 
 	        continue; 
 	    }
@@ -118,7 +117,7 @@ namespace TrackHitsUtils
 	        continue; 
 	    }
 
-
+	
 	    //If it's a bad DOMS, skip
 	    bool badOM = false;
 	    for (I3VectorOMKey::const_iterator badK = badDOMs->begin();
@@ -146,10 +145,12 @@ namespace TrackHitsUtils
 	    { 
 	        continue; 
 	    }
-
+	
 
 	    //distance metric
-	    I3Position kPos = (*k).second.position;
+	    //I3Position kPos = (*k).second.position;
+	    I3Position kPos = (geo->omgeo.find(omkey))->second.position;
+	 
 	    double cad = I3Calculator::ClosestApproachDistance((*fit), kPos);
 	    log_debug("cad=%f",cad);
 	    if (cad > mincadDist || std::isnan(cad)) 
@@ -164,22 +165,16 @@ namespace TrackHitsUtils
 	    double qTot = 0;
 	    std::vector<double> ts;
 	    std::vector<double> qs;
-	    for (I3RecoPulseSeriesMap::const_iterator i = (*pulses).begin();
-		 i != (*pulses).end(); i++)
+	    BOOST_FOREACH(const I3RecoPulse &pulse, (*k).second)
 	    {
-	      if ((*i).first == omkey)
-	      {
-                  BOOST_FOREACH(const I3RecoPulse &pulse, i->second)
-		  {
-                      ts.push_back(I3Calculator::TimeResidual((*fit), 
-							      kPos, 
-							      pulse.GetTime()));
-		      qs.push_back(pulse.GetCharge());
-		      qTot += pulse.GetCharge();
-		  }
-	      }
+	      ts.push_back(I3Calculator::TimeResidual((*fit), 
+						      kPos, 
+						      pulse.GetTime()));
+	      qs.push_back(pulse.GetCharge());
+	      qTot += pulse.GetCharge();
 	    }
-	    allObsQs[omkey] = qTot;
+	     
+	   
 	    log_debug("String,OM:%d,%d",omkey.GetString(),omkey.GetOM());
 	    log_debug("qTot= %f",qTot);
 	
