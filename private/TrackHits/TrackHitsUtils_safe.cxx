@@ -73,8 +73,6 @@ namespace TrackHitsUtils
 	I3MapKeyDouble cads;//Closest Approach Distances
 	I3MapKeyVectorDouble coincObsQsList;//Coincident Observed Charges
 	I3MapKeyVectorDouble coincObsProbsList;//Coincident Observed Charges
-	I3MapKeyVectorDouble noncoincObsQsList;//Coincident Observed Charges
-	I3MapKeyVectorDouble noncoincObsProbsList;//Coincident Observed Charges
 	I3MapKeyDouble unnormedExQsList;//Unnormalized Expected Charges
 	I3MapKeyDouble expectedBgsList;//Expected Background Charges
 	unsigned int index = 0;
@@ -301,9 +299,6 @@ namespace TrackHitsUtils
 	    //double coincObsQsTmp=0;
 	    std::vector<double> coincObsQsTmp;
 	    std::vector<double> coincObsProbsTmp;
-	    std::vector<double> noncoincObsQsTmp;
-	    std::vector<double> noncoincObsProbsTmp;
-	  
 	    log_debug("q size=%lu",qs.size());
 	    for (unsigned int  i = 0; i< qs.size(); i++)
 	    {
@@ -314,11 +309,6 @@ namespace TrackHitsUtils
 		    coincObsQsTmp.push_back(qs[i]);
 		    coincObsProbsTmp.push_back(sumQuantilesPerTime[i]);
 		}
-		else
-	        {
-		    noncoincObsQsTmp.push_back(qs[i]);
-		    noncoincObsProbsTmp.push_back(sumQuantilesPerTime[i]);
-	        }
 	    }
 	    log_debug("coinc obs q= %f",coincObsQsTmp);
 	    log_debug("coinc obs p= %f",coincObsPsTmp);
@@ -333,8 +323,6 @@ namespace TrackHitsUtils
 	      unnormedExQsList[omkey] = 0;
 	      coincObsQsList[omkey] = v; 
 	      coincObsProbsList[omkey] = v;
-	      noncoincObsQsList[omkey] = v; 
-	      noncoincObsProbsList[omkey] = v;
 	    }
 	    else 
 	    { 
@@ -343,8 +331,6 @@ namespace TrackHitsUtils
 	      unnormedExQsList[omkey] = quantileSum;
 	      coincObsQsList[omkey] = coincObsQsTmp; 
 	      coincObsProbsList[omkey] = coincObsProbsTmp;
-	      noncoincObsQsList[omkey] = noncoincObsQsTmp; 
-	      noncoincObsProbsList[omkey] = noncoincObsProbsTmp;
 	    }
 	    index++;
 	}
@@ -352,17 +338,15 @@ namespace TrackHitsUtils
 
 	//Book calculation pieces to the frame
 	std::string namePrefix ("TrackHits_"+fitName+"_"+pulsesName);
-	std::string nameSufixes[7] = { "coincObsQsList", 
-				       "coincObsProbsList",
-				       "noncoincObsQsList", 
-				       "noncoincObsProbsList",
+	std::string nameSufixes[5] = { "coincObsQsList", 
+				       "coincObsProbsList", 
 				       "expectedQsList", 
 				       "expectedBgsList",
 				       "closestApDists"};
 	log_debug("Names set");
 	std::string sls = boost::lexical_cast<std::string>(segments->size());
 	std::vector<std::string> names;
-	for (unsigned int i = 0; i < 7; i++)
+	for (unsigned int i = 0; i < 5; i++)
 	{
 	    std::string n = namePrefix + "_" + nameSufixes[i] + "_" +sls;
 	    if (frame->Has(n))
@@ -377,8 +361,6 @@ namespace TrackHitsUtils
 	int nameIdx=0;
 	frame -> Put(names[nameIdx], boost::make_shared<I3MapKeyVectorDouble>(coincObsQsList)); nameIdx++;
 	frame -> Put(names[nameIdx], boost::make_shared<I3MapKeyVectorDouble>(coincObsProbsList)); nameIdx++;
-	frame -> Put(names[nameIdx], boost::make_shared<I3MapKeyVectorDouble>(noncoincObsQsList)); nameIdx++;
-	frame -> Put(names[nameIdx], boost::make_shared<I3MapKeyVectorDouble>(noncoincObsProbsList)); nameIdx++;
 	frame -> Put(names[nameIdx], boost::make_shared<I3MapKeyDouble>(unnormedExQsList)); nameIdx++;
 	frame -> Put(names[nameIdx], boost::make_shared<I3MapKeyDouble>(expectedBgsList)); nameIdx++;
 	frame -> Put(names[nameIdx], boost::make_shared<I3MapKeyDouble>(cads)); nameIdx++;
