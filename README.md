@@ -1,4 +1,9 @@
 # TrackHits
+D.Pankova 04/2019
+New parameter 'Deepcore' was added. Default = false.
+If set to true DeepCore DOMs would also be checked for compatibility.
+Otherwise only DOMs outide DeepCore, in the 'veto'
+
 D.Pankova 03/2019
 
 This is a part of StartingTrackVeto algorithm by K.Jero.
