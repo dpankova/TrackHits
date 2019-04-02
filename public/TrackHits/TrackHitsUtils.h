@@ -32,6 +32,7 @@ namespace TrackHitsUtils
 			 std::string fitName, 
 			 double mincadDist,
 			 double percent,
+			 bool deepcore,
 			 I3GeometryConstPtr geo, 
 			 I3VectorOMKeyPtr badDOMs );
     

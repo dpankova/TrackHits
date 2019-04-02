@@ -52,6 +52,7 @@ private:
     double timeEdgeNSteps_;
     double minCADDist_;
     double percent_;
+    bool deepcore_;
     std::string geoName_;
     std::string badDOMsName_;
     I3GeometryConstPtr geo_;

@@ -62,6 +62,9 @@ I3_MODULE(TrackHits);
     AddParameter("Geometry", 
 		 "Name of geometry object to use",
 		 I3DefaultName<I3Geometry>::value());
+    AddParameter("DeepCore",
+                 "Look at Deepcore DOMS or only IC DOMS",
+                 false);
     AddParameter("BadDOMs",
 		 "Name of BadDOMs object to use\
                  (I assume there is a corresponding SLC list)",
@@ -79,6 +82,7 @@ void TrackHits::Configure()
     GetParameter("Time_Edge_NSteps", timeEdgeNSteps_);
     GetParameter("Min_CAD_Dist", minCADDist_);
     GetParameter("Percent", percent_);
+    GetParameter("DeepCore", deepcore_);
     GetParameter("Geometry", geoName_);
     GetParameter("BadDOMs", badDOMsName_);
 }
@@ -158,7 +162,8 @@ void TrackHits::Physics(I3FramePtr frame)
 					pulsesName_, 
 					fitName_,
 					minCADDist_, 
-					percent_, 
+					percent_,
+					deepcore_,
 					geo_, 
 					boost::make_shared<I3VectorOMKey>(badDOMs_) );
 

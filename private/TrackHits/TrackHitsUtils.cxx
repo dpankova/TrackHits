@@ -48,6 +48,7 @@ namespace TrackHitsUtils
 			 std::string fitName, 
 			 double mincadDist, 
 			 double percent,
+			 bool deepcore,
 			 I3GeometryConstPtr geo, 
 			 I3VectorOMKeyPtr badDOMs)
     {
@@ -90,22 +91,27 @@ namespace TrackHitsUtils
 	    { 
 	        continue; 
 	    }
+
+	    if (deepcore == false)
+	    {
 	    //DC icecube strings
-	    if (((omkey.GetString() == 35) || (omkey.GetString() == 36)
-		 || (omkey.GetString() == 37)) && (omkey.GetOM()>38)) 
-	    { 
-	        continue; 
-	    }
-	    if (((omkey.GetString() == 26) || (omkey.GetString() == 27))
-		&& (omkey.GetOM()>38)) 
-	    { 
-	        continue; 
-	    }
-	    if (((omkey.GetString() == 45) || (omkey.GetString() == 46))
-		&& (omkey.GetOM()>38)) 
-	    { 
-	        continue; 
-	    }
+                if (((omkey.GetString() == 35) || (omkey.GetString() == 36)
+                     || (omkey.GetString() == 37)) && (omkey.GetOM()>38))
+                  {
+                    continue;
+                  }
+                if (((omkey.GetString() == 26) || (omkey.GetString() == 27))
+                    && (omkey.GetOM()>38))
+                  {
+                    continue;
+                  }
+                if (((omkey.GetString() == 45) || (omkey.GetString() == 46))
+                    && (omkey.GetOM()>38))
+                  {
+                    continue;
+                  }
+	     }
+	    
 	    //Skip if it's IceTop DOM
 	    if (omkey.GetString()<87 && omkey.GetOM()>60) 
 	    { 
